@@ -16,7 +16,7 @@ public class RegisterRequest {
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
-    // optional: only ADMIN can set this later
+
     private String role;
 
 }
