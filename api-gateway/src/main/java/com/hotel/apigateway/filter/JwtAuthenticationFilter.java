@@ -33,12 +33,10 @@ public class JwtAuthenticationFilter
 
             String path = exchange.getRequest().getURI().getPath();
 
-            // 1️⃣ Public endpoints
             if (isPublicPath(path)) {
                 return chain.filter(exchange);
             }
 
-            // 2️⃣ Check Authorization header
             String authHeader = exchange.getRequest()
                     .getHeaders()
                     .getFirst(HttpHeaders.AUTHORIZATION);
@@ -53,7 +51,6 @@ public class JwtAuthenticationFilter
                 String email = jwtUtil.extractEmail(token);
                 String role = jwtUtil.extractRole(token);
 
-                // 3️⃣ Forward headers
                 ServerWebExchange modifiedExchange = exchange.mutate()
                         .request(builder -> builder
                                 .header("X-User-Email", email)
