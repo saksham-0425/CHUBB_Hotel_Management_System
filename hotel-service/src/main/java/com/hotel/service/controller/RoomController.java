@@ -1,7 +1,9 @@
 package com.hotel.service.controller;
 
 import com.hotel.service.dto.CreateRoomRequest;
+import com.hotel.service.dto.RoomResponse;
 import com.hotel.service.dto.UpdateRoomRequest;
+import com.hotel.service.mapper.RoomMapper;
 import com.hotel.service.model.Room;
 import com.hotel.service.service.RoomService;
 import jakarta.validation.Valid;
@@ -22,33 +24,42 @@ public class RoomController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
-    public Room createRoom(
+    public RoomResponse createRoom(
             @PathVariable Long hotelId,
             @Valid @RequestBody CreateRoomRequest request) {
-        return roomService.createRoom(hotelId, request);
+
+        Room room = roomService.createRoom(hotelId, request);
+        return RoomMapper.toResponse(room);
     }
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER','RECEPTIONIST')")
-    public List<Room> getRooms(@PathVariable Long hotelId) {
-        return roomService.getRoomsByHotel(hotelId);
+    public List<RoomResponse> getRooms(@PathVariable Long hotelId) {
+        return roomService.getRoomsByHotel(hotelId)
+                .stream()
+                .map(RoomMapper::toResponse)
+                .toList();
     }
 
     @GetMapping("/{roomId}")
     @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER','RECEPTIONIST')")
-    public Room getRoom(
+    public RoomResponse getRoom(
             @PathVariable Long hotelId,
             @PathVariable Long roomId) {
-        return roomService.getRoom(hotelId, roomId);
+
+        Room room = roomService.getRoom(hotelId, roomId);
+        return RoomMapper.toResponse(room);
     }
 
     @PutMapping("/{roomId}")
     @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
-    public Room updateRoom(
+    public RoomResponse updateRoom(
             @PathVariable Long hotelId,
             @PathVariable Long roomId,
-            @RequestBody UpdateRoomRequest request) {
-        return roomService.updateRoom(hotelId, roomId, request);
+            @Valid @RequestBody UpdateRoomRequest request) {
+
+        Room room = roomService.updateRoom(hotelId, roomId, request);
+        return RoomMapper.toResponse(room);
     }
 
     @DeleteMapping("/{roomId}")
@@ -57,6 +68,7 @@ public class RoomController {
     public void deleteRoom(
             @PathVariable Long hotelId,
             @PathVariable Long roomId) {
+
         roomService.deleteRoom(hotelId, roomId);
     }
 }
